@@ -32,19 +32,21 @@ const seed = (data) => {
         // 获取 JWT
         const { token } = loginResponse.data
 
-        // 创建内容
-        item.posts.map(async (post) => {
-          const { title, body } = post
+        if (item.posts) {
+          // 创建内容
+          item.posts.map(async (post) => {
+            const { title, body } = post
 
-          const postResponse = await axios.post(
-            API_POSTS,
-            { title, body },
-            {
-              headers: { 'Authorization': `Bearer ${token}` }
-            })
+            const postResponse = await axios.post(
+              API_POSTS,
+              { title, body },
+              {
+                headers: { 'Authorization': `Bearer ${token}` }
+              })
 
-          console.log('创建了内容：', postResponse.data.title)
-        })
+            console.log('创建了内容：', postResponse.data.title)
+          })
+        }
       } catch (error) {
         console.log(error.message)
       }
