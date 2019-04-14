@@ -37,7 +37,7 @@ const createPost = async (post, token) => {
     })
 }
 
-const seed = async (data) => {
+const seedData = async (data) => {
   data.map(
     async (item) => {
       const { user, posts } = item
@@ -80,9 +80,9 @@ const seed = async (data) => {
   )
 }
 
-const seedData = async () => {
-  await seed(usersData)
-  await seed(poemData)
+const seed = async () => {
+  await seedData(usersData)
+  await seedData(poemData)
 }
 
-seedData()
+seed()
