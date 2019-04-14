@@ -7,12 +7,14 @@ const API_USERS = `${API_BASE}/users`
 const API_POSTS = `${API_BASE}/posts`
 const API_AUTH_LOGIN = `${API_BASE}/auth/login`
 
+const password = '111111'
+
 const userLogin = async (user) => {
   return await axios.post(
     API_AUTH_LOGIN,
     {
       name: user,
-      password: '111111'
+      password
     })
 }
 
@@ -21,7 +23,7 @@ const createUser = async (user) => {
     API_USERS,
     {
       name: user,
-      password: '111111'
+      password
     })
 }
 
