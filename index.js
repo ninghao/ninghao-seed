@@ -7,52 +7,81 @@ const API_USERS = `${API_BASE}/users`
 const API_POSTS = `${API_BASE}/posts`
 const API_AUTH_LOGIN = `${API_BASE}/auth/login`
 
-const seed = (data) => {
+const userLogin = async (user) => {
+  return await axios.post(
+    API_AUTH_LOGIN,
+    {
+      name: user,
+      password: '111111'
+    })
+}
+
+const createUser = async (user) => {
+  return await axios.post(
+    API_USERS,
+    {
+      name: user,
+      password: '111111'
+    })
+}
+
+const createPost = async (post, token) => {
+  const { title, body } = post
+  return await axios.post(
+    API_POSTS,
+    { title, body },
+    {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+}
+
+const seed = async (data) => {
   data.map(
     async (item) => {
-      try {
-        // 创建用户
-        const userResponse = await axios.post(
-          API_USERS,
-          {
-            name: item.user,
-            password: '111111'
-          })
+      const { user, posts } = item
+      let loginResponse
 
-        console.log('创建了用户：', userResponse.data.name)
-
+      if (user) {
         // 用户登录
-        const loginResponse = await axios.post(
-          API_AUTH_LOGIN,
-          {
-            name: item.user,
-            password: '111111'
+        await userLogin(user)
+          .then((response) => {
+            loginResponse = response
           })
-
-        // 获取 JWT
-        const { token } = loginResponse.data
-
-        if (item.posts) {
-          // 创建内容
-          item.posts.map(async (post) => {
-            const { title, body } = post
-
-            const postResponse = await axios.post(
-              API_POSTS,
-              { title, body },
-              {
-                headers: { 'Authorization': `Bearer ${token}` }
-              })
-
-            console.log('创建了内容：', postResponse.data.title)
+          .catch(async (error) => {
+            const { response: { status } } = error
+            if (status === 401) {
+              const userResponse = await createUser(user)
+                .then(async (response) => {
+                  console.log('创建了用户：', response.data.name)
+                  loginResponse = await userLogin(user)
+                })
+                .catch((error) => {
+                  console.log(error.message);
+                })
+              return
+            }
+            console.log(error.message);
           })
-        }
-      } catch (error) {
-        console.log(error.message)
       }
+
+      // 提取 JWT
+      const { data: { token } } = loginResponse
+
+      // 创建内容
+      if (posts) {
+        item.posts.map(async (post) => {
+          const postResponse = await createPost(post, token)
+          console.log('创建了内容：', postResponse.data.title)
+        })
+      }
+
     }
   )
 }
 
-seed(usersData);
-seed(poemData);
+const seedData = async () => {
+  await seed(usersData)
+  await seed(poemData)
+}
+
+seedData()
