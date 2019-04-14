@@ -76,7 +76,6 @@ const seed = async (data) => {
           console.log('创建了内容：', postResponse.data.title)
         })
       }
-
     }
   )
 }
