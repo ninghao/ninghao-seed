@@ -1,5 +1,6 @@
 const axios = require('axios')
 const poemData = require('./data/poem')
+const usersData = require('./data/users')
 
 const API_BASE = 'http://localhost:3000'
 const API_USERS = `${API_BASE}/users`
@@ -51,4 +52,5 @@ const seed = (data) => {
   )
 }
 
+seed(usersData);
 seed(poemData);
